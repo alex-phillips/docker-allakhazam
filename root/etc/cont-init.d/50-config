@@ -1,0 +1,25 @@
+#!/usr/bin/with-contenv bash
+
+# set default values for variables
+declare -A ALLAKHAZAM_CONF
+ALLAKHAZAM_CONF[DB_HOST]=${DB_HOST:-mariadb}
+ALLAKHAZAM_CONF[DB_DATABASE]=${DB_DATABASE:-peq}
+ALLAKHAZAM_CONF[DB_USER]=${DB_USER:-root}
+ALLAKHAZAM_CONF[DB_PASS]=${DB_PASS:-}
+
+if [ ! -f "/config/config.php" ]; then
+	mv /app/allakhazam/includes/config.template.php /config/config.php
+
+	sed -i 's|db_host     = "mariadb"|db_host     = "'${ALLAKHAZAM_CONF[DB_HOST]}'"|g' /config/config.php
+	sed -i 's|db_name     = "peq"|db_name     = "'${ALLAKHAZAM_CONF[DB_DATABASE]}'"|g' /config/config.php
+	sed -i 's|db_user     = "root"|db_user     = "'${ALLAKHAZAM_CONF[DB_USER]}'"|g' /config/config.php
+	sed -i 's|db_password = "root"|db_password = "'${ALLAKHAZAM_CONF[DB_PASS]}'"|g' /config/config.php
+	sed -i 's|http://localhost/||g' /config/config.php
+fi
+
+ln -sf /config/config.php /app/allakhazam/includes/
+
+# permissions
+chown -R abc:abc \
+	/app \
+	/config
